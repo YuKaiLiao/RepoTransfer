@@ -1,8 +1,8 @@
 @ECHO OFF
 set SOURCE_GITLAB_REPO_URL=ssh://git@gitlab.syntecclub.com:40022/ProjectRoot/CNC/appkernel.git
-set TARGET_GITLAB_REPO_URL=ssh://git@gitlab.syntecclub.com:40022/ProjectRoot/AUTO/LaserWelding/laser-welding-plugin-v3.git
-set FILTER_SOURCE_REPO_DIR=PlugIn/LaserWelding/
-set PROJECT_NAME=LaserWeldingTest
+set TARGET_GITLAB_REPO_URL=ssh://git@gitlab.syntecclub.com:40022/ProjectRoot/AUTO/lasercutting/laser-cutting-plugin.git
+set FILTER_SOURCE_REPO_DIR=PlugIn/LaserCutting/NewCutting/
+set PROJECT_NAME=LaserCuttingTest
 set PUTTYKEY_PATH=C:\Users\OpenCNC\.ssh\gitlab_rsa.ppk
 
 ECHO clone the source gitlab repo to local
@@ -26,7 +26,15 @@ git fetch
 
 ECHO push all local branches to new repo
 git push --set-upstream origin master --no-verify
-git push --all --no-verify
+REM git push --all --no-verify
+
+setlocal enabledelayedexpansion
+for /f "delims=" %%b in ('git for-each-ref --format="%%(refname:short)" --sort=-committerdate refs/heads/') do (
+    set "branch=%%b"
+    echo push dir: !branch!
+    git push origin !branch!  --no-verify
+)
+endlocal
 
 popd
 pause
